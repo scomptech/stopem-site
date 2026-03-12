@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { ShieldAlert, Lock, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder logic for authentication
-    if (email === 'admin@stopem.org' && password === 'admin') {
-      alert('Login successful! Redirecting to dashboard...');
-      // Navigation to dashboard would happen here
+    // Temporary hardcoded authentication
+    if (username === 'admin' && password === 'password') {
+      localStorage.setItem('isAuthenticated', 'true');
+      navigate('/admin/dashboard');
     } else {
       setError('Invalid credentials. Please try again.');
     }
@@ -37,13 +38,13 @@ export default function LoginPage() {
           {error && <div className="error-message">{error}</div>}
           
           <div className="form-group">
-            <label htmlFor="email">Email Address</label>
+            <label htmlFor="username">Username</label>
             <input 
-              type="email" 
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="manager@stopem.org"
+              type="text" 
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="admin"
               required 
             />
           </div>
