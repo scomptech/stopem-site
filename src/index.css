@@ -62,7 +62,7 @@ body {
 }
 
 .text-center {
-  text-center;
+  text-align: center;
 }
 
 .section-header {

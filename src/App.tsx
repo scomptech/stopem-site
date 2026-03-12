@@ -3,8 +3,6 @@ import {
   AlertTriangle, 
   Users, 
   EyeOff, 
-  MapMap, 
-  Megaphone, 
   Phone, 
   Share2, 
   CalendarDays,
