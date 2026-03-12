@@ -10,25 +10,71 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import '../index.css';
+import { supabase } from '../lib/supabase';
 
 export default function LandingPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  // Fetch site settings (optional, can be expanded later)
+  const [headline, setHeadline] = useState('Stop the Radical Redistricting Law in Virginia');
+  const [subtitle, setSubtitle] = useState('They are trying to pick their voters. We demand fair representation. Stand with us to stop partisan gerrymandering before it\'s too late.');
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
+    
+    // Fetch settings from Supabase
+    const fetchSettings = async () => {
+      try {
+        const { data, error } = await supabase.from('site_settings').select('*');
+        if (data && !error) {
+          const headlineSetting = data.find(s => s.id === 'hero_headline');
+          const subtitleSetting = data.find(s => s.id === 'hero_subtitle');
+          if (headlineSetting) setHeadline(headlineSetting.value);
+          if (subtitleSetting) setSubtitle(subtitleSetting.value);
+        }
+      } catch (err) {
+        console.error('Error fetching settings:', err);
+      }
+    };
+    
+    fetchSettings();
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubmitted(true);
-      setEmail('');
+    if (!email) return;
+
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const { error } = await supabase
+        .from('signatures')
+        .insert([{ email }]);
+
+      if (error) {
+        if (error.code === '23505') {
+          setError('This email has already signed the petition.');
+        } else {
+          setError('There was an error saving your signature. Please try again.');
+        }
+      } else {
+        setSubmitted(true);
+        setEmail('');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -55,10 +101,10 @@ export default function LandingPage() {
         <div className="hero-content fade-in-up">
           <div className="hero-badge">Urgent Action Required</div>
           <h1 className="hero-title">
-            Stop the Radical Redistricting Law in Virginia
+            {headline}
           </h1>
           <p className="hero-subtitle">
-            They are trying to pick their voters. We demand fair representation. Stand with us to stop partisan gerrymandering before it's too late.
+            {subtitle}
           </p>
           <div className="hero-cta">
             <a href="#petition" className="btn btn-primary btn-lg">
@@ -128,6 +174,7 @@ export default function LandingPage() {
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="petition-form">
+                    {error && <div className="error-message" style={{marginBottom: '1rem'}}>{error}</div>}
                     <div className="input-group">
                       <input 
                         type="email" 
@@ -136,9 +183,10 @@ export default function LandingPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         required 
                         className="petition-input"
+                        disabled={isSubmitting}
                       />
-                      <button type="submit" className="btn btn-primary btn-submit">
-                        Sign Now
+                      <button type="submit" className="btn btn-primary btn-submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Signing...' : 'Sign Now'}
                       </button>
                     </div>
                     <p className="privacy-note">We respect your privacy. No spam, ever.</p>

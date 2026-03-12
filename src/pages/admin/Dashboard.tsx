@@ -1,11 +1,92 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LayoutDashboard, FileText, Settings, LogOut, ShieldAlert } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 import './Dashboard.css';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // Dashboard Stats
+  const [totalSignatures, setTotalSignatures] = useState(0);
+  const [recentSignatures, setRecentSignatures] = useState(0);
+  
+  // Site Settings
+  const [headline, setHeadline] = useState('Stop the Radical Redistricting Law in Virginia');
+  const [subtitle, setSubtitle] = useState('They are trying to pick their voters. We demand fair representation. Stand with us to stop partisan gerrymandering before it\'s too late.');
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsMessage, setSettingsMessage] = useState('');
+
+  useEffect(() => {
+    fetchStats();
+    fetchSettings();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      // Get total signatures
+      const { count: totalCount, error: totalError } = await supabase
+        .from('signatures')
+        .select('*', { count: 'exact', head: true });
+        
+      if (!totalError && totalCount !== null) {
+        setTotalSignatures(totalCount);
+      }
+
+      // Get recent signatures (last 24 hours)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      const { count: recentCount, error: recentError } = await supabase
+        .from('signatures')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', yesterday.toISOString());
+        
+      if (!recentError && recentCount !== null) {
+        setRecentSignatures(recentCount);
+      }
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+    }
+  };
+
+  const fetchSettings = async () => {
+    try {
+      const { data, error } = await supabase.from('site_settings').select('*');
+      if (data && !error) {
+        const h = data.find(s => s.id === 'hero_headline');
+        const sub = data.find(s => s.id === 'hero_subtitle');
+        if (h) setHeadline(h.value);
+        if (sub) setSubtitle(sub.value);
+      }
+    } catch (err) {
+      console.error('Error fetching settings:', err);
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    setSavingSettings(true);
+    setSettingsMessage('');
+    
+    try {
+      const updates = [
+        { id: 'hero_headline', value: headline, updated_at: new Date().toISOString() },
+        { id: 'hero_subtitle', value: subtitle, updated_at: new Date().toISOString() }
+      ];
+      
+      const { error } = await supabase.from('site_settings').upsert(updates);
+      
+      if (error) throw error;
+      setSettingsMessage('Settings saved successfully!');
+      setTimeout(() => setSettingsMessage(''), 3000);
+    } catch (err) {
+      console.error('Error saving settings:', err);
+      setSettingsMessage('Error saving settings.');
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
@@ -68,18 +149,18 @@ export default function AdminDashboard() {
             <div className="dashboard-grid">
               <div className="stat-card">
                 <h3>Total Signatures</h3>
-                <div className="stat-number">1,248</div>
-                <div className="stat-trend positive">+12 today</div>
+                <div className="stat-number">{totalSignatures.toLocaleString()}</div>
+                <div className="stat-trend positive">+{recentSignatures} in last 24h</div>
               </div>
               <div className="stat-card">
                 <h3>Page Views</h3>
-                <div className="stat-number">8,592</div>
-                <div className="stat-trend positive">+430 today</div>
+                <div className="stat-number">--</div>
+                <div className="stat-trend">Set up Google Analytics</div>
               </div>
               <div className="stat-card">
                 <h3>Blog Posts</h3>
-                <div className="stat-number">3</div>
-                <div className="stat-action">Manage posts &rarr;</div>
+                <div className="stat-number">0</div>
+                <div className="stat-action" onClick={() => setActiveTab('content')}>Manage posts &rarr;</div>
               </div>
             </div>
           )}
@@ -102,16 +183,9 @@ export default function AdminDashboard() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Why the New Maps Fail Us</td>
-                      <td><span className="status-badge published">Published</span></td>
-                      <td>Mar 10, 2026</td>
-                      <td><button className="btn-outline btn-sm">Edit</button></td>
-                    </tr>
-                    <tr>
-                      <td>Rally Details: What to Bring</td>
-                      <td><span className="status-badge draft">Draft</span></td>
-                      <td>Mar 12, 2026</td>
-                      <td><button className="btn-outline btn-sm">Edit</button></td>
+                      <td colSpan={4} style={{textAlign: 'center', padding: '2rem', color: '#6b7280'}}>
+                        No blog posts yet. Connection to Supabase required to store posts.
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -123,15 +197,37 @@ export default function AdminDashboard() {
             <div className="settings-panel">
               <div className="settings-card">
                 <h3>Hero Section Content</h3>
-                <div className="form-group">
+                <div className="form-group" style={{marginBottom: '1.5rem'}}>
                   <label>Main Headline</label>
-                  <input type="text" defaultValue="Stop the Radical Redistricting Law in Virginia" />
+                  <input 
+                    type="text" 
+                    value={headline}
+                    onChange={(e) => setHeadline(e.target.value)}
+                  />
                 </div>
-                <div className="form-group">
+                <div className="form-group" style={{marginBottom: '1.5rem'}}>
                   <label>Subtitle</label>
-                  <textarea rows={3} defaultValue="They are trying to pick their voters. We demand fair representation. Stand with us to stop partisan gerrymandering before it's too late."></textarea>
+                  <textarea 
+                    rows={4} 
+                    value={subtitle}
+                    onChange={(e) => setSubtitle(e.target.value)}
+                  ></textarea>
                 </div>
-                <button className="btn btn-primary">Save Changes</button>
+                
+                <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={handleSaveSettings}
+                    disabled={savingSettings}
+                  >
+                    {savingSettings ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  {settingsMessage && (
+                    <span style={{color: settingsMessage.includes('Error') ? '#dc2626' : '#10b981', fontWeight: 500}}>
+                      {settingsMessage}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           )}
