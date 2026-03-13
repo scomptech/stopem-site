@@ -24,8 +24,8 @@ export default function LandingPage() {
   const [error, setError] = useState('');
 
   // Fetch site settings
-  const [headline, setHeadline] = useState('Stop the Radical Redistricting Law in Virginia');
-  const [subtitle, setSubtitle] = useState('They are trying to pick their voters. We demand fair representation. Stand with us to stop partisan gerrymandering before it\'s too late.');
+  const [headline, setHeadline] = useState('Stop the Illegal Redistricting Power Grab');
+  const [subtitle, setSubtitle] = useState('Politicians are trying to bypass the law and overturn the will of the people. Stand with Virginia families to demand fair maps and protect the sanctity of our vote.');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -221,17 +221,17 @@ export default function LandingPage() {
               viewport={{ once: true }}
               className="section-header"
             >
-              <h2 className="section-title">A Stand for Virginia</h2>
+              <h2 className="section-title">A Breach of Trust</h2>
               <p className="section-description">
-                Our commonwealth's future is at a crossroads. A radical proposal seeks to silence the voices of thousands by drawing lines that protect politicians, not people.
+                In 2020, 65% of Virginians voted for fair, bipartisan redistricting. Now, a radical effort seeks to trash that independent process and go back to smoky backrooms where politicians pick their voters.
               </p>
             </motion.div>
             
             <div className="features-grid">
               {[
-                { icon: Users, title: "Unity Over Division", text: "They seek to fracture historical communities. We stand for keeping neighborhoods together and voices strong." },
-                { icon: EyeOff, title: "The Right to Know", text: "Government works best in the light. We demand an end to the closed-door deals that define this radical map." },
-                { icon: AlertTriangle, title: "Fair Play", text: "Elections should be determined by voters, not by the pens of partisan mapmakers. We demand fair competition." }
+                { icon: Users, title: "Protecting Our Families", text: "Good representation means having a representative who understands your specific community. We stand against carving up our neighborhoods for partisan math." },
+                { icon: EyeOff, title: "Ending Secret Deals", text: "This amendment was rushed through a budget session without the required public notice. We demand transparency and the rule of law." },
+                { icon: AlertTriangle, title: "The Will of the People", text: "We already settled this. We want politicians out of the room. We demand that the government respects the constitutional amendment we already passed." }
               ].map((feature, idx) => (
                 <motion.div 
                   key={idx}
@@ -267,7 +267,7 @@ export default function LandingPage() {
               <div className="petition-content">
                 <h2>Join the Front Line</h2>
                 <p>
-                  Every signature is a message to Richmond: We are watching, and we will not be silenced. Add your name to the official petition for fair maps.
+                  Every signature is a message to Richmond: We are watching, and we will not allow our voices to be deleted from the map. Add your name to the official petition.
                 </p>
                 
                 <AnimatePresence mode="wait">
@@ -319,27 +319,27 @@ export default function LandingPage() {
         <section id="take-action" className="section bg-light">
           <div className="container">
             <div className="section-header text-center">
-              <h2 className="section-title">The Path to Victory</h2>
-              <p className="section-description">A movement is only as strong as its members. Here is how you can help secure our representation today.</p>
+              <h2 className="section-title">A Path to Victory</h2>
+              <p className="section-description">This isn't about red vs. blue—it's about right vs. wrong. Join thousands of Virginians standing up for the rule of law.</p>
             </div>
 
             <div className="action-grid">
               {[
                 { 
                   icon: Phone, 
-                  title: "Legislative Pressure", 
-                  text: "Call your representative directly. Tell them a 'YES' vote on this map is a 'NO' to their constituents.",
+                  title: "Hold Them Accountable", 
+                  text: "Call your representative directly. Tell them a 'YES' vote on this map is a betrayal of their constituents' trust.",
                   link: { text: "Find Your Legislator", url: "https://whosmy.virginiageneralassembly.gov/" }                },
                 { 
                   icon: Share2, 
-                  title: "Digital Rally", 
-                  text: "Share this mission. The more Virginians who know the truth, the harder it is for them to ignore us.",
+                  title: "Rally the Neighbors", 
+                  text: "Share this mission. The more families who know the truth about these illegal tactics, the harder it is for them to ignore us.",
                   buttons: ["Share on X", "Share on FB"]
                 },
                 { 
                   icon: CalendarDays, 
-                  title: "Stand in Person", 
-                  text: "Join the mass rally at the Capitol. Nothing shows strength like thousands of citizens standing together.",
+                  title: "Stand Together", 
+                  text: "Join the mass rally at the Capitol. Let them see the faces of the people they are trying to silence.",
                   details: "Next Tuesday @ 10:00 AM | State Capitol Grounds"
                 }
               ].map((action, idx) => (
@@ -383,7 +383,7 @@ export default function LandingPage() {
                 <ShieldAlert className="logo-icon logo-accent" />
                 <span>StopEm<span className="logo-accent">.org</span></span>
               </div>
-              <p>For Virginia. For Fairness. For the Future.</p>
+              <p>For our families. For the rule of law. For the future of Virginia.</p>
             </div>
             <div className="footer-links">
               <h4>Organization</h4>
