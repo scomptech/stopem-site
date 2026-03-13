@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FileText, Settings, LogOut, ShieldAlert, Edit, Trash2, Plus, Download } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, LogOut, ShieldAlert, Download } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import BlogEditor from './BlogEditor';
+import NewsManager from './NewsManager';
 import './Dashboard.css';
 
 export default function AdminDashboard() {
@@ -105,14 +106,12 @@ export default function AdminDashboard() {
         return;
       }
 
-      // Convert to CSV
       const headers = ['Email', 'Signed At'];
       const csvContent = [
         headers.join(','),
         ...data.map(row => `${row.email},"${new Date(row.created_at).toLocaleString()}"`)
       ].join('\n');
 
-      // Create download link
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -186,7 +185,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="admin-layout">
-      {/* Sidebar */}
       <aside className="admin-sidebar">
         <div className="admin-brand">
           <ShieldAlert className="logo-icon text-dark" size={28} />
@@ -225,7 +223,6 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="admin-main">
         <header className="admin-header">
           <h1>{activeTab === 'overview' ? 'Dashboard Overview' : 
@@ -265,60 +262,13 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === 'content' && (
-            <div className="content-manager">
-              <div className="content-header-actions">
-                <h2>Blog Posts</h2>
-                <button 
-                  className="btn btn-primary" 
-                  onClick={() => { setCurrentPost(null); setIsEditing(true); }}
-                >
-                  <Plus size={18} /> Create New Post
-                </button>
-              </div>
-              <div className="mock-table-container">
-                <table className="mock-table">
-                  <thead>
-                    <tr>
-                      <th>Title</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loadingPosts ? (
-                      <tr><td colSpan={4} style={{textAlign: 'center', padding: '2rem'}}>Loading posts...</td></tr>
-                    ) : posts.length === 0 ? (
-                      <tr><td colSpan={4} style={{textAlign: 'center', padding: '2rem', color: '#6b7280'}}>No blog posts yet. Click "Create New Post" to start.</td></tr>
-                    ) : (
-                      posts.map(post => (
-                        <tr key={post.id}>
-                          <td style={{fontWeight: 600}}>{post.title}</td>
-                          <td><span className={`status-badge ${post.status}`}>{post.status}</span></td>
-                          <td>{new Date(post.created_at).toLocaleDateString()}</td>
-                          <td>
-                            <div style={{display: 'flex', gap: '0.5rem'}}>
-                              <button 
-                                className="btn-outline btn-sm" 
-                                onClick={() => { setCurrentPost(post); setIsEditing(true); }}
-                              >
-                                <Edit size={14} />
-                              </button>
-                              <button 
-                                className="btn-outline btn-sm text-red"
-                                onClick={() => handleDeletePost(post.id)}
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <NewsManager 
+              posts={posts}
+              loading={loadingPosts}
+              onCreate={() => { setCurrentPost(null); setIsEditing(true); }}
+              onEdit={(post) => { setCurrentPost(post); setIsEditing(true); }}
+              onDelete={handleDeletePost}
+            />
           )}
 
           {activeTab === 'settings' && (
