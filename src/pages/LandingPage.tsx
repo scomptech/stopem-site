@@ -9,6 +9,7 @@ import {
   ArrowRight,
   ShieldAlert
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import '../index.css';
 import { supabase } from '../lib/supabase';
 
@@ -89,6 +90,7 @@ export default function LandingPage() {
           </div>
           <div className="nav-links">
             <a href="#the-issue">The Issue</a>
+            <Link to="/blog">News</Link>
             <a href="#petition">Petition</a>
             <a href="#take-action" className="btn btn-nav">Take Action</a>
           </div>

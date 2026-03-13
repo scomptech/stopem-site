@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FileText, Settings, LogOut, ShieldAlert, Edit, Trash2, Plus } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, LogOut, ShieldAlert, Edit, Trash2, Plus, Download } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import BlogEditor from './BlogEditor';
 import './Dashboard.css';
@@ -24,6 +24,7 @@ export default function AdminDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [currentPost, setCurrentPost] = useState<any>(null);
   const [loadingPosts, setLoadingPosts] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     fetchStats();
@@ -89,6 +90,46 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleExportSignatures = async () => {
+    setExporting(true);
+    try {
+      const { data, error } = await supabase
+        .from('signatures')
+        .select('email, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        alert('No signatures to export yet.');
+        return;
+      }
+
+      // Convert to CSV
+      const headers = ['Email', 'Signed At'];
+      const csvContent = [
+        headers.join(','),
+        ...data.map(row => `${row.email},"${new Date(row.created_at).toLocaleString()}"`)
+      ].join('\n');
+
+      // Create download link
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `stopem-signatures-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Export error:', err);
+      alert('Failed to export signatures.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleSaveSettings = async () => {
     setSavingSettings(true);
     setSettingsMessage('');
@@ -124,8 +165,8 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/admin');
   };
 
@@ -201,6 +242,14 @@ export default function AdminDashboard() {
                 <h3>Total Signatures</h3>
                 <div className="stat-number">{totalSignatures.toLocaleString()}</div>
                 <div className="stat-trend positive">+{recentSignatures} in last 24h</div>
+                <button 
+                  className="btn btn-outline btn-sm" 
+                  style={{marginTop: '1rem', width: '100%'}}
+                  onClick={handleExportSignatures}
+                  disabled={exporting}
+                >
+                  <Download size={14} /> {exporting ? 'Exporting...' : 'Export to CSV'}
+                </button>
               </div>
               <div className="stat-card">
                 <h3>Page Views</h3>

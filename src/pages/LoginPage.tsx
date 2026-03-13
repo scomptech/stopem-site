@@ -1,21 +1,33 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldAlert, Lock, ArrowLeft } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Temporary hardcoded authentication
-    if (username === 'admin' && password === 'password') {
-      localStorage.setItem('isAuthenticated', 'true');
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      
       navigate('/admin/dashboard');
-    } else {
-      setError('Invalid credentials. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Invalid login credentials.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -38,14 +50,15 @@ export default function LoginPage() {
           {error && <div className="error-message">{error}</div>}
           
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="email">Email Address</label>
             <input 
-              type="text" 
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="admin"
+              type="email" 
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="manager@stopem.org"
               required 
+              disabled={isLoading}
             />
           </div>
 
@@ -58,14 +71,16 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required 
+              disabled={isLoading}
             />
           </div>
 
-          <button type="submit" className="btn btn-primary btn-full">
-            <Lock size={18} /> Secure Login
+          <button type="submit" className="btn btn-primary btn-full" disabled={isLoading}>
+            <Lock size={18} /> {isLoading ? 'Authenticating...' : 'Secure Login'}
           </button>
         </form>
       </div>
     </div>
   );
 }
+
