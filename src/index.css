@@ -502,14 +502,29 @@ body {
   }
 }
 
-/* Login Page Styles */
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--c-bg-alt);
-  padding: 2rem;
+.blog-content-rendering {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: var(--c-text-main);
+}
+
+.blog-content-rendering img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--border-radius);
+  margin: 2rem 0;
+  box-shadow: var(--shadow-md);
+}
+
+.blog-content-rendering h3 {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  margin: 2.5rem 0 1rem;
+  color: var(--c-navy);
+}
+
+.blog-content-rendering p {
+  margin-bottom: 1.5rem;
 }
 
 .login-card {
