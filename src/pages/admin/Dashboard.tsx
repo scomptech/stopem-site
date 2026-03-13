@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FileText, Settings, LogOut, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, LogOut, ShieldAlert, Edit, Trash2, Plus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import BlogEditor from './BlogEditor';
 import './Dashboard.css';
 
 export default function AdminDashboard() {
@@ -18,14 +19,20 @@ export default function AdminDashboard() {
   const [savingSettings, setSavingSettings] = useState(false);
   const [settingsMessage, setSettingsMessage] = useState('');
 
+  // Blog Management
+  const [posts, setPosts] = useState<any[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentPost, setCurrentPost] = useState<any>(null);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+
   useEffect(() => {
     fetchStats();
     fetchSettings();
+    fetchPosts();
   }, []);
 
   const fetchStats = async () => {
     try {
-      // Get total signatures
       const { count: totalCount, error: totalError } = await supabase
         .from('signatures')
         .select('*', { count: 'exact', head: true });
@@ -34,7 +41,6 @@ export default function AdminDashboard() {
         setTotalSignatures(totalCount);
       }
 
-      // Get recent signatures (last 24 hours)
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       
@@ -65,6 +71,24 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchPosts = async () => {
+    setLoadingPosts(true);
+    try {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (!error && data) {
+        setPosts(data);
+      }
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
+
   const handleSaveSettings = async () => {
     setSavingSettings(true);
     setSettingsMessage('');
@@ -88,10 +112,36 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeletePost = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this post?')) return;
+    
+    try {
+      const { error } = await supabase.from('blog_posts').delete().eq('id', id);
+      if (error) throw error;
+      fetchPosts();
+    } catch (err) {
+      alert('Error deleting post');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     navigate('/admin');
   };
+
+  if (isEditing) {
+    return (
+      <div className="admin-layout">
+        <main className="admin-main" style={{padding: '2rem'}}>
+          <BlogEditor 
+            post={currentPost} 
+            onBack={() => { setIsEditing(false); setCurrentPost(null); }} 
+            onSave={() => { setIsEditing(false); setCurrentPost(null); fetchPosts(); }} 
+          />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-layout">
@@ -159,7 +209,7 @@ export default function AdminDashboard() {
               </div>
               <div className="stat-card">
                 <h3>Blog Posts</h3>
-                <div className="stat-number">0</div>
+                <div className="stat-number">{posts.length}</div>
                 <div className="stat-action" onClick={() => setActiveTab('content')}>Manage posts &rarr;</div>
               </div>
             </div>
@@ -169,7 +219,12 @@ export default function AdminDashboard() {
             <div className="content-manager">
               <div className="content-header-actions">
                 <h2>Blog Posts</h2>
-                <button className="btn btn-primary">Create New Post</button>
+                <button 
+                  className="btn btn-primary" 
+                  onClick={() => { setCurrentPost(null); setIsEditing(true); }}
+                >
+                  <Plus size={18} /> Create New Post
+                </button>
               </div>
               <div className="mock-table-container">
                 <table className="mock-table">
@@ -182,11 +237,35 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td colSpan={4} style={{textAlign: 'center', padding: '2rem', color: '#6b7280'}}>
-                        No blog posts yet. Connection to Supabase required to store posts.
-                      </td>
-                    </tr>
+                    {loadingPosts ? (
+                      <tr><td colSpan={4} style={{textAlign: 'center', padding: '2rem'}}>Loading posts...</td></tr>
+                    ) : posts.length === 0 ? (
+                      <tr><td colSpan={4} style={{textAlign: 'center', padding: '2rem', color: '#6b7280'}}>No blog posts yet. Click "Create New Post" to start.</td></tr>
+                    ) : (
+                      posts.map(post => (
+                        <tr key={post.id}>
+                          <td style={{fontWeight: 600}}>{post.title}</td>
+                          <td><span className={`status-badge ${post.status}`}>{post.status}</span></td>
+                          <td>{new Date(post.created_at).toLocaleDateString()}</td>
+                          <td>
+                            <div style={{display: 'flex', gap: '0.5rem'}}>
+                              <button 
+                                className="btn-outline btn-sm" 
+                                onClick={() => { setCurrentPost(post); setIsEditing(true); }}
+                              >
+                                <Edit size={14} />
+                              </button>
+                              <button 
+                                className="btn-outline btn-sm text-red"
+                                onClick={() => handleDeletePost(post.id)}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
