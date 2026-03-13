@@ -266,8 +266,7 @@ export default function LandingPage() {
                   icon: Phone, 
                   title: "Legislative Pressure", 
                   text: "Call your representative directly. Tell them a 'YES' vote on this map is a 'NO' to their constituents.",
-                  link: { text: "Find Your Legislator", url: "https://whomy.virginiageneralassembly.gov/" }
-                },
+                  link: { text: "Find Your Legislator", url: "https://whosmy.virginiageneralassembly.gov/" }                },
                 { 
                   icon: Share2, 
                   title: "Digital Rally", 
