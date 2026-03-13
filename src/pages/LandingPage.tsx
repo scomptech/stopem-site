@@ -9,7 +9,9 @@ import {
   ArrowRight,
   ShieldAlert,
   Star,
-  ExternalLink
+  ExternalLink,
+  Menu,
+  X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,6 +24,7 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch site settings
   const [headline, setHeadline] = useState('Stop the Illegal Redistricting Power Grab');
@@ -104,6 +107,7 @@ export default function LandingPage() {
             <ShieldAlert className="logo-icon logo-accent" />
             <span>StopEm<span className="logo-accent">.org</span></span>
           </motion.div>
+          
           <motion.div 
             initial={{ x: 20, opacity: 0 }} 
             animate={{ x: 0, opacity: 1 }}
@@ -115,8 +119,38 @@ export default function LandingPage() {
             <a href="#petition">Petition</a>
             <a href="#take-action" className="btn btn-nav">Take Action</a>
           </motion.div>
+
+          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(true)}>
+            <Menu size={32} />
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Menu Drawer */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="mobile-overlay"
+          >
+            <button 
+              className="btn-back" 
+              style={{ position: 'absolute', top: '2rem', right: '2rem', color: 'white' }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <X size={40} />
+            </button>
+            <Link to="/" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+            <Link to="/blog" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>News</Link>
+            <a href="#register" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>Register</a>
+            <a href="#petition" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>Petition</a>
+            <a href="#take-action" className="btn btn-primary btn-lg" onClick={() => setMobileMenuOpen(false)}>Take Action</a>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <header className="hero">
@@ -138,12 +172,20 @@ export default function LandingPage() {
             {subtitle}
           </motion.p>
           <motion.div variants={itemVariants} transition={itemTransition} className="hero-cta">
-            <a href="#petition" className="btn btn-primary btn-lg">
+            <motion.a 
+              whileTap={{ scale: 0.95 }}
+              href="#petition" 
+              className="btn btn-primary btn-lg"
+            >
               Sign the Petition <ArrowRight className="icon-right" size={20} />
-            </a>
-            <a href="#the-issue" className="btn btn-secondary btn-lg">
+            </motion.a>
+            <motion.a 
+              whileTap={{ scale: 0.95 }}
+              href="#the-issue" 
+              className="btn btn-secondary btn-lg"
+            >
               The Mission
-            </a>
+            </motion.a>
           </motion.div>
         </motion.div>
       </header>
@@ -237,6 +279,7 @@ export default function LandingPage() {
                   key={idx}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
+                  whileTap={{ scale: 0.98 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
                   className="feature-card"
@@ -302,9 +345,14 @@ export default function LandingPage() {
                           className="petition-input"
                           disabled={isSubmitting}
                         />
-                        <button type="submit" className="btn btn-primary btn-submit" disabled={isSubmitting}>
+                        <motion.button 
+                          whileTap={{ scale: 0.98 }}
+                          type="submit" 
+                          className="btn btn-primary btn-submit" 
+                          disabled={isSubmitting}
+                        >
                           {isSubmitting ? 'Recording...' : 'Sign Petition'}
-                        </button>
+                        </motion.button>
                       </div>
                       <p className="privacy-note">Your information is used solely for the petition delivery.</p>
                     </motion.form>
@@ -356,9 +404,15 @@ export default function LandingPage() {
                     <h3>{action.title}</h3>
                     <p>{action.text}</p>
                     {action.link && (
-                      <a href={action.link.url} target="_blank" rel="noopener noreferrer" className="action-link">
+                      <motion.a 
+                        whileTap={{ x: 5 }}
+                        href={action.link.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="action-link"
+                      >
                         {action.link.text} <ArrowRight size={16} />
-                      </a>
+                      </motion.a>
                     )}
                     {action.buttons && (
                       <div className="share-buttons">

@@ -76,7 +76,7 @@ body {
 }
 
 .section {
-  padding: 8rem 0;
+  padding: clamp(4rem, 10vw, 8rem) 0;
   position: relative;
 }
 
@@ -233,6 +233,61 @@ body {
   color: var(--c-red);
 }
 
+/* Mobile Menu Drawer Styles */
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  z-index: 1100;
+}
+
+.navbar-scrolled .mobile-menu-btn {
+  color: var(--c-navy);
+}
+
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 33, 71, 0.98);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.mobile-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1.5px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: -1;
+}
+
+.mobile-nav-link {
+  color: white;
+  text-decoration: none;
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.mobile-nav-link:hover {
+  color: var(--c-red);
+}
+
 /* Hero Section - The Heart of the Pride */
 .hero {
   position: relative;
@@ -303,8 +358,8 @@ body {
 /* Impactful Cards */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem);
 }
 
 .feature-card {
@@ -481,9 +536,13 @@ body {
 @media (max-width: 992px) {
   .petition-card {
     grid-template-columns: 1fr;
+    box-shadow: 10px 10px 0 var(--c-red);
   }
   .petition-image {
     min-height: 250px;
+  }
+  .petition-content {
+    padding: 3rem 2rem;
   }
   .section-title {
     font-size: 2.5rem;
@@ -494,9 +553,36 @@ body {
   .nav-links {
     display: none;
   }
-  .hero-title {
-    font-size: 3rem;
+
+  .mobile-menu-btn {
+    display: block;
   }
+
+  .hero {
+    padding-top: 6rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 10vw, 3.5rem);
+  }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .btn-lg {
+    width: 100%;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-card {
+    padding: 2rem;
+  }
+
   .section {
     padding: 5rem 0;
   }
