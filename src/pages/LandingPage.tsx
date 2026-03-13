@@ -8,7 +8,8 @@ import {
   CalendarDays,
   ArrowRight,
   ShieldAlert,
-  Star
+  Star,
+  ExternalLink
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -110,6 +111,7 @@ export default function LandingPage() {
           >
             <a href="#the-issue">The Issue</a>
             <Link to="/blog">News</Link>
+            <a href="#register">Register to Vote</a>
             <a href="#petition">Petition</a>
             <a href="#take-action" className="btn btn-nav">Take Action</a>
           </motion.div>
@@ -149,6 +151,67 @@ export default function LandingPage() {
       <div className="stripes-decor"></div>
 
       <main>
+        {/* Vote Registration Section */}
+        <section id="register" className="section bg-white" style={{ paddingBottom: '2rem' }}>
+          <div className="container">
+            <div className="petition-card" style={{ background: 'var(--c-navy)', color: 'white', display: 'block', boxShadow: '20px 20px 0 var(--c-gold)' }}>
+              <div className="petition-content" style={{ textAlign: 'center', maxWidth: '900px', margin: '0 auto' }}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <h2 style={{ color: 'white', fontSize: '3rem', fontFamily: 'var(--font-serif)' }}>Make Your Voice Count</h2>
+                  <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.25rem', marginBottom: '3rem' }}>
+                    Signing the petition is powerful, but voting is the ultimate check on radical legislation. 
+                    Ensure you are registered and ready for the 2026 Virginia elections.
+                  </p>
+
+                  <div className="features-grid" style={{ marginBottom: '4rem' }}>
+                    <div className="feature-card" style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', color: 'white', padding: '2rem' }}>
+                      <h3 style={{ color: 'var(--c-gold)', fontSize: '1.25rem' }}>Primary Election</h3>
+                      <p style={{ color: 'white', fontSize: '1.75rem', fontWeight: 800, margin: '0.5rem 0' }}>August 4, 2026</p>
+                      <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>Registration Deadline: July 24</p>
+                    </div>
+                    <div className="feature-card" style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', color: 'white', padding: '2rem' }}>
+                      <h3 style={{ color: 'var(--c-gold)', fontSize: '1.25rem' }}>General Election</h3>
+                      <p style={{ color: 'white', fontSize: '1.75rem', fontWeight: 800, margin: '0.5rem 0' }}>Nov 3, 2026</p>
+                      <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>Registration Deadline: Oct 23</p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <a 
+                      href="https://vote.elections.virginia.gov/VoterInformation" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn btn-primary btn-lg"
+                      style={{ background: 'var(--c-gold)', color: 'var(--c-navy)', boxShadow: '0 4px 0 #8a6d3b' }}
+                    >
+                      Register Online Now <ExternalLink size={20} />
+                    </a>
+                    <a 
+                      href="https://vote.elections.virginia.gov/VoterInformation/Lookup/status" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn btn-secondary btn-lg"
+                      style={{ border: '2px solid var(--c-gold)', color: 'var(--c-gold)', background: 'transparent' }}
+                    >
+                      Check Registration Status
+                    </a>
+                  </div>
+
+                  <div style={{ marginTop: '3rem', padding: '1.5rem', border: '1px dashed rgba(255,255,255,0.2)', borderRadius: '8px' }}>
+                    <p style={{ fontSize: '0.95rem', margin: 0, color: 'rgba(255,255,255,0.7)' }}>
+                      <strong>Pro-Tip:</strong> Virginia now offers <strong>Same-Day Registration</strong>. If you miss the deadline, you can still register and vote a provisional ballot in person at your registrar's office or polling place!
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* The Issue Section */}
         <section id="the-issue" className="section bg-light">
           <div className="container">
