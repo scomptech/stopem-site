@@ -120,7 +120,11 @@ export default function LandingPage() {
             <a href="#take-action" className="btn btn-nav">Take Action</a>
           </motion.div>
 
-          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(true)}>
+          <button 
+            className="mobile-menu-btn" 
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open navigation menu"
+          >
             <Menu size={32} />
           </button>
         </div>
@@ -140,6 +144,7 @@ export default function LandingPage() {
               className="btn-back" 
               style={{ position: 'absolute', top: '2rem', right: '2rem', color: 'white' }}
               onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu"
             >
               <X size={40} />
             </button>
@@ -339,6 +344,7 @@ export default function LandingPage() {
                         <input 
                           type="email" 
                           placeholder="Your Email Address" 
+                          aria-label="Email address for petition"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required 
