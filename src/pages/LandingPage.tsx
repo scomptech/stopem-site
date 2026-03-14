@@ -120,19 +120,20 @@ export default function LandingPage() {
             <a href="#take-action" className="btn btn-nav">Take Action</a>
           </motion.div>
 
-          <button 
-            className="mobile-menu-btn" 
+          <button
+            className="mobile-menu-btn"
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Open navigation menu"
+            title="Open navigation menu"
           >
             <Menu size={32} />
           </button>
-        </div>
-      </nav>
+          </div>
+          </nav>
 
-      {/* Mobile Menu Drawer */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
+          {/* Mobile Menu Drawer */}
+          <AnimatePresence>
+          {mobileMenuOpen && (
           <motion.div 
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -145,10 +146,10 @@ export default function LandingPage() {
               style={{ position: 'absolute', top: '2rem', right: '2rem', color: 'white' }}
               onClick={() => setMobileMenuOpen(false)}
               aria-label="Close menu"
+              title="Close menu"
             >
               <X size={40} />
-            </button>
-            <Link to="/" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+            </button>            <Link to="/" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>Home</Link>
             <Link to="/blog" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>News</Link>
             <a href="#register" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>Register</a>
             <a href="#petition" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>Petition</a>
