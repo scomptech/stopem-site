@@ -455,8 +455,6 @@ export default function LandingPage() {
             <div className="footer-links">
               <h4>Contact</h4>
               <a href="mailto:info@stopem.org">info@stopem.org</a>
-              <a href="#">Media Kit</a>
-              <a href="#">Privacy Policy</a>
             </div>
           </div>
           <div className="footer-bottom">
